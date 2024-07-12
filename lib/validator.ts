@@ -1,18 +1,7 @@
-import { Annotations, Stage } from 'aws-cdk-lib';
+import { Annotations } from 'aws-cdk-lib';
 import { IConstruct, IValidation } from 'constructs';
 
 export class Validator implements IValidation {
-  static attachTo(root: IConstruct) {
-    if (Stage.isStage(root)) {
-      // Stage(AppもStageを継承しているので同様)はaddValidationが効かないので、スタックまで取り出す
-      root.node.children.forEach((child) => {
-        Validator.attachTo(child);
-      });
-    } else {
-      root.node.addValidation(new Validator(root));
-    }
-  }
-
   constructor(private readonly root: IConstruct) {
     this.root = root;
   }

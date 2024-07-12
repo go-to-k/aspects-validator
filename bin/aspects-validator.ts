@@ -14,8 +14,5 @@ const stack2 = new MyStack(app, 'Stack2', {});
 // 呼び忘れ
 // cdk.Aspects.of(stack2).add(new MyAspect());
 
-// スタック定義の後(最後に)呼ぶ必要がある
-// -> これを忘れることを考えると、staticメソッドじゃなくて普通にstackごとにnode.addValidation呼んだ方がいいかも？
-// App, StageはaddValidationが効かないので、それらから直接呼んではいけない
-// -> NG: app.node.addValidation(new Validator(app));
-Validator.attachTo(app);
+// appから呼ぶ場合、各スタック定義の後(最後に)呼ぶ必要がある
+app.node.addValidation(new Validator(app));
