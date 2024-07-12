@@ -1,4 +1,5 @@
 import { Annotations } from 'aws-cdk-lib';
+import { CfnBucket } from 'aws-cdk-lib/aws-s3';
 import { IConstruct, IValidation } from 'constructs';
 
 export class Validator implements IValidation {
@@ -13,8 +14,14 @@ export class Validator implements IValidation {
   private checkXxx(root: IConstruct): string[] {
     const errors: string[] = [];
 
-    // 何か処理(テキトーに出力)
-    Annotations.of(root).addWarningV2('my-library:Construct.validator-print', root.node.id);
+    // 何か処理
+    if (root instanceof CfnBucket) {
+      Annotations.of(root).addWarningV2('my-library:Construct.validator-print', root.cfnResourceType);
+      // 何か条件
+      if (false) {
+        errors.push(`エラー: ${root.node.id}`);
+      }
+    }
 
     root.node.children.forEach((child) => {
       errors.push(...this.checkXxx(child));
