@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { AspectsValidatorStack } from '../lib/aspects-validator-stack';
+import { MyStack } from '../lib/stack';
+import { Validator } from '../lib/validator';
+import { MyAspect } from '../lib/aspect';
 
 const app = new cdk.App();
-new AspectsValidatorStack(app, 'AspectsValidatorStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+const stack1 = new MyStack(app, 'Stack1', {});
+cdk.Aspects.of(stack1).add(new MyAspect());
 
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
+const stack2 = new MyStack(app, 'Stack2', {});
+// 呼び忘れ
+// cdk.Aspects.of(stack2).add(new MyAspect());
 
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-});
+// スタック定義の後(最後に)呼ぶ必要がある
+// -> これを忘れることを考えると、staticメソッドじゃなくて普通にstackごとにnode.addValidation呼んだ方がいいかも？
+// App, StageはaddValidationが効かないので、それらから直接呼んではいけない
+// -> NG: app.node.addValidation(new Validator(app));
+Validator.attachTo(app);
